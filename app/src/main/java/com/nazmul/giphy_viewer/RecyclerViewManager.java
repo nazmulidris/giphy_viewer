@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
 
@@ -234,7 +233,6 @@ final class RecyclerViewManager {
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
             GlideApp.with(activity.getApplicationContext())
                     .load(imageUri)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .dontTransform()
                     .circleCrop()
                     .into(imageView)
