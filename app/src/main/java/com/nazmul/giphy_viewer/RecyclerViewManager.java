@@ -142,6 +142,9 @@ final class RecyclerViewManager {
         activity.getLifecycle()
                 .addObserver(
                         new LifecycleObserver() {
+                            // The following code doesn't work w/ GridLayoutManager. It is meant
+                            // to restore the scrolled position of the RecyclerView on screen
+                            // orientation change.
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
                                 appViewModel.position =
