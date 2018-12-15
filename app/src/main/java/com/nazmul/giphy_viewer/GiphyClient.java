@@ -18,7 +18,6 @@ package com.nazmul.giphy_viewer;
 
 import android.os.Looper;
 import android.util.Log;
-
 import com.giphy.sdk.core.models.Media;
 import com.giphy.sdk.core.models.enums.MediaType;
 import com.giphy.sdk.core.models.enums.RatingType;
@@ -33,6 +32,7 @@ import androidx.annotation.Nullable;
 public class GiphyClient {
     public static final String API_KEY = "mnVttajnx9Twmgp3vFbMQa3Gvn9Rv4Hg";
     public static final GPHApi client = new GPHApiClient(API_KEY);
+    public static final int MAX_ITEMS_PER_REQUEST = 25;
 
     /**
      * @param runOnComplete This Runnable will be executed after the API response is received. If
@@ -41,9 +41,14 @@ public class GiphyClient {
      *     on the main thread.
      * @param onResponseHandler The <code>onResponse</code> method is called only if results are
      *     returned in the API response.
+     * @param offset This integer contains the next set of images that you want to load from Giphy.
+     *     This is usually going to the size of the number of entries that are already downloaded
+     *     (ie the size of the underlying data).
      */
     public static void makeTrendingRequest(
-            @Nullable Runnable runOnComplete, @NonNull GiphyResultsHandler onResponseHandler) {
+            @Nullable Runnable runOnComplete,
+            @NonNull GiphyResultsHandler onResponseHandler,
+            @Nullable Integer offset) {
 
         CompletionHandler<ListMediaResponse> completionHandler =
                 (results, exception) -> {
@@ -64,7 +69,7 @@ public class GiphyClient {
 
         client.trending(
                 /* type= */ MediaType.gif,
-                /* limit= */ null,
+                /* limit= */ offset,
                 /* offset= */ null,
                 /* rating */ RatingType.g,
                 /* completionHandler */ completionHandler);

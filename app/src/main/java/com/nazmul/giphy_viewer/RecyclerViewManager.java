@@ -22,13 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.paginate.Paginate;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -75,7 +72,7 @@ final class RecyclerViewManager {
                         public void onLoadMore() {
                             Log.d("logtag", "onLoadMore: ");
                             isLoading = true;
-                            appViewModel.requestGetMoreData();
+                            appViewModel.requestMoreData();
                         }
 
                         @Override

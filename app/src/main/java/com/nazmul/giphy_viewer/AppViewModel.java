@@ -19,20 +19,16 @@ package com.nazmul.giphy_viewer;
 import android.app.Application;
 import android.os.Handler;
 import android.util.Log;
-
 import com.giphy.sdk.core.models.Media;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 
 public class AppViewModel extends AndroidViewModel {
-    public static final int MAX_ITEMS_PER_REQUEST = 25;
+
     public int position = 0;
     // TODO Add generic type to accept only response data from API models (not String).
     public ArrayList<String> underlyingData = new ArrayList<>();
@@ -45,7 +41,7 @@ public class AppViewModel extends AndroidViewModel {
     public ArrayList<String> mockDummyData(int offset) {
         ArrayList<String> dummyData = new ArrayList<>();
         double seed = Math.random();
-        for (int i = 0; i < MAX_ITEMS_PER_REQUEST; i++) {
+        for (int i = 0; i < GiphyClient.MAX_ITEMS_PER_REQUEST; i++) {
             dummyData.add("random-" + seed + " " + (i + offset));
         }
         return dummyData;
@@ -55,7 +51,7 @@ public class AppViewModel extends AndroidViewModel {
 
     // Methods that UI can use to request API calls.
 
-    public void requestDataRefresh(@Nullable Runnable runOnRefreshComplete) {
+    public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
         Log.d("logtag", "requestDataRefresh: ");
         // TODO Replace w/ Giphy API call.
         resetData(mockDummyData(0));
@@ -68,11 +64,12 @@ public class AppViewModel extends AndroidViewModel {
                 null,
                 (List<Media> mediaList) -> {
                     Log.d("logtag", "requestDataRefresh mediaList.size: " + mediaList.size());
-                });
+                },
+                null);
     }
 
     // TODO This needs to be wired to a overscroll detection event and be called.
-    public void requestGetMoreData() {
+    public void requestMoreData() {
         // TODO implement this w/ real API call.
         Log.d("logtag", "requestGetMoreData: " + underlyingData.size());
         ArrayList<String> newData = mockDummyData(underlyingData.size());

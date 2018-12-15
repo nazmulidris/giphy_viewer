@@ -75,7 +75,7 @@ public final class MainActivity extends AppCompatActivity {
         void setupSwipeRefreshLayout() {
             swipeRefreshLayout = findViewById(R.id.swipe_refresh_container);
             runOnRefreshComplete = () -> swipeRefreshLayout.setRefreshing(false);
-            onRefreshGestureHandler = () -> appViewModel.requestDataRefresh(runOnRefreshComplete);
+            onRefreshGestureHandler = () -> appViewModel.requestRefreshData(runOnRefreshComplete);
             swipeRefreshLayout.setOnRefreshListener(onRefreshGestureHandler);
         }
 
