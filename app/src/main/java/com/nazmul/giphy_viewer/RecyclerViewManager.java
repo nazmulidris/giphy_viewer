@@ -16,14 +16,12 @@
 
 package com.nazmul.giphy_viewer;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
@@ -171,7 +169,7 @@ final class RecyclerViewManager {
         dataAdapter =
                 new DataAdapter(
                         (Media item) -> {
-                            // TODO Replace this w/ actual handling of user clicking on an item.
+                            /*
                             activity.startActivity(
                                     new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl())));
                             Toast.makeText(
@@ -179,6 +177,8 @@ final class RecyclerViewManager {
                                             item.getUrl(),
                                             Toast.LENGTH_SHORT)
                                     .show();
+                            */
+                            activity.startActivity(FullScreenActivity.getIntent(activity, item));
                         });
         recyclerView.setAdapter(dataAdapter);
         recyclerView.setRecyclerListener(
