@@ -21,8 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
 
 public class FullScreenActivity extends Activity {
@@ -31,8 +33,12 @@ public class FullScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen_activity);
         Uri imageUri = getIntent().getData();
-        ImageView gifView = findViewById(R.id.fullscreen_gif);
-        GlideApp.with(this).load(imageUri).into(gifView).clearOnDetach();
+        SimpleDraweeView gifView = findViewById(R.id.fullscreen_gif);
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setUri(imageUri)
+                .setAutoPlayAnimations(true)
+                .build();
+        gifView.setController(controller);
     }
 
     public static Intent getIntent(Context context, Media item) {

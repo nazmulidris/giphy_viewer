@@ -19,6 +19,7 @@ package com.nazmul.giphy_viewer;
 import android.app.Application;
 import android.util.Log;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.giphy.sdk.core.models.Media;
 
 import org.greenrobot.eventbus.EventBus;
@@ -37,6 +38,7 @@ public class AppViewModel extends AndroidViewModel {
 
     public AppViewModel(@NonNull Application application) {
         super(application);
+        Fresco.initialize(application);
     }
 
     // Methods that UI can use to request API calls.

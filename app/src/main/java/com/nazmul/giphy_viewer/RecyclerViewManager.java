@@ -21,9 +21,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
 
@@ -150,9 +150,6 @@ final class RecyclerViewManager {
         activity.getLifecycle()
                 .addObserver(
                         new LifecycleObserver() {
-                            // STOPSHIP The following code doesn't work w/ GridLayoutManager. It is
-                            // meant to restore the scrolled position of the RecyclerView on screen
-                            // orientation change.
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
                                 appViewModel.position =
@@ -182,17 +179,6 @@ final class RecyclerViewManager {
                             activity.startActivity(FullScreenActivity.getIntent(activity, item));
                         });
         recyclerView.setAdapter(dataAdapter);
-        recyclerView.setRecyclerListener(
-                (RecyclerView.ViewHolder viewHolder) -> {
-                    // This is an optimization to reduce the memory usage of RecyclerView's
-                    // recycled view pool and good practice when using Glide with RecyclerView.
-                    if (viewHolder instanceof RowViewHolder) {
-                        RowViewHolder rowViewHolder = (RowViewHolder) viewHolder;
-                        GlideApp.with(activity.getApplicationContext())
-                                .clear(rowViewHolder.imageView);
-                    }
-                });
-        recyclerView.setHasFixedSize(true);
     }
 
     private class DataAdapter extends RecyclerView.Adapter<RowViewHolder> {
@@ -225,7 +211,7 @@ final class RecyclerViewManager {
 
     private class RowViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView imageView;
+        private final SimpleDraweeView imageView;
 
         public RowViewHolder(@NonNull View imageView) {
             super(imageView);
@@ -235,11 +221,7 @@ final class RecyclerViewManager {
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
             imageView.setOnClickListener(v -> onItemClick.onClick(data));
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
-            GlideApp.with(activity.getApplicationContext())
-                    .load(imageUri)
-                    .circleCrop()
-                    .into(imageView)
-                    .clearOnDetach();
+            imageView.setImageURI(imageUri);
         }
     }
 
