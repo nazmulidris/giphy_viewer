@@ -61,15 +61,15 @@ final class RecyclerViewManager {
 
     // Infinite scrolling support.
 
-    private boolean isLoading;
     public static final int TRIGGER_LOADING_THRESHOLD = 2;
+    private boolean isLoading;
     private Paginate paginate;
 
     /**
      * This only needs to be done once for the life of this class. Infinite scrolling only comes
      * into play after the first set of data has been loaded.
      */
-    private void setupInfiniteScrolling() {
+    public void setupInfiniteScrolling() {
         if (paginate == null) {
             Log.d("logtag", "setupInfiniteScrolling: setting it up ONCE");
             Paginate.Callbacks callbacks =

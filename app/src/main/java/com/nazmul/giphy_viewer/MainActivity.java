@@ -46,8 +46,17 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        viewHolder.swipeRefreshLayout.setRefreshing(true);
-        viewHolder.onRefreshGestureHandler.onRefresh();
+        if (appViewModel.underlyingData.isEmpty()) {
+            // Activity has no data, so perform a refresh now.
+            viewHolder.swipeRefreshLayout.setRefreshing(true);
+            viewHolder.onRefreshGestureHandler.onRefresh();
+        } else {
+            // Activity underwent an orientation change. The AppViewModel has data, but pagination
+            // isn't attached to the RecyclerView, since this only happens after the first refresh
+            // operation occurs (in the block above) when the Activity is created for the very very
+            // first time (not an orientation change driven destroy -> instantiate).
+            viewHolder.recyclerViewManager.setupInfiniteScrolling();
+        }
     }
 
     private void setupViewModel() {
