@@ -19,4 +19,4 @@
     android:id="@+id/image_grid_cell"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    fresco:viewAspectRatio="1.33" />
+    android:adjustViewBounds="true" />

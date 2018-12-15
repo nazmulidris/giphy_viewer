@@ -37,8 +37,8 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 final class RecyclerViewManager {
 
@@ -138,10 +138,14 @@ final class RecyclerViewManager {
     // Layout Manager.
 
     private static final int GRID_SPAN_COUNT = 2;
-    private GridLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
 
     private void setupLayoutManager() {
-        layoutManager = new GridLayoutManager(activity, GRID_SPAN_COUNT);
+        layoutManager =
+                new StaggeredGridLayoutManager(
+                        GRID_SPAN_COUNT, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setGapStrategy(
+                StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         recyclerView.setLayoutManager(layoutManager);
     }
 
@@ -154,7 +158,7 @@ final class RecyclerViewManager {
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
                                 appViewModel.position =
-                                        layoutManager.findFirstVisibleItemPosition();
+                                        layoutManager.findFirstVisibleItemPositions(null)[0];
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -222,6 +226,9 @@ final class RecyclerViewManager {
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
             imageView.setOnClickListener(v -> onItemClick.onClick(data));
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
+            imageView.setAspectRatio(
+                    (float) data.getImages().getFixedWidthDownsampled().getWidth()
+                            / (float) data.getImages().getFixedWidthDownsampled().getHeight());
             imageView.setController(
                     Fresco.newDraweeControllerBuilder()
                             .setUri(imageUri)

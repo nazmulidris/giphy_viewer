@@ -31,9 +31,15 @@ public class FullScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen_activity);
+
         Uri imageUri = getIntent().getData();
-        SimpleDraweeView gifView = findViewById(R.id.fullscreen_gif);
-        gifView.setController(
+        int width = getIntent().getIntExtra("width", 0);
+        int height = getIntent().getIntExtra("height", 0);
+
+        SimpleDraweeView imageView = findViewById(R.id.fullscreen_gif);
+
+        imageView.setAspectRatio((float) width / (float) height);
+        imageView.setController(
                 Fresco.newDraweeControllerBuilder()
                         .setUri(imageUri)
                         .setAutoPlayAnimations(true)
@@ -43,6 +49,8 @@ public class FullScreenActivity extends Activity {
     public static Intent getIntent(Context context, Media item) {
         Intent intent = new Intent(context, FullScreenActivity.class);
         intent.setData(Uri.parse(item.getImages().getOriginal().getGifUrl()));
+        intent.putExtra("width", item.getImages().getOriginal().getWidth());
+        intent.putExtra("height", item.getImages().getOriginal().getHeight());
         return intent;
     }
 }
