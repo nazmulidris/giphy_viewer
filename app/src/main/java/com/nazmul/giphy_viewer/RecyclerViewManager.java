@@ -22,9 +22,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
 
@@ -37,21 +38,23 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 final class RecyclerViewManager {
 
     private final RecyclerView recyclerView;
     private final AppViewModel appViewModel;
+    private final MainActivity activity;
 
     RecyclerViewManager(MainActivity activity, RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         this.appViewModel = ViewModelProviders.of(activity).get(AppViewModel.class);
+        this.activity = activity;
         setupEventListeners();
-        setupLifecycleObservers(activity);
+        setupLifecycleObservers();
         setupLayoutManager();
-        setupDataAdapter(activity);
+        setupDataAdapter();
     }
 
     private void setupEventListeners() {
@@ -126,27 +129,24 @@ final class RecyclerViewManager {
 
     // Layout Manager.
 
-    private static final int ORIENTATION = StaggeredGridLayoutManager.VERTICAL;
     private static final int GRID_SPAN_COUNT = 2;
-    private StaggeredGridLayoutManager layoutManager;
+    private GridLayoutManager layoutManager;
 
     private void setupLayoutManager() {
-        layoutManager = new StaggeredGridLayoutManager(GRID_SPAN_COUNT, ORIENTATION);
-        layoutManager.setGapStrategy(
-                StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        layoutManager = new GridLayoutManager(activity, GRID_SPAN_COUNT);
         recyclerView.setLayoutManager(layoutManager);
     }
 
     // Saving/restoring list position.
 
-    private void setupLifecycleObservers(MainActivity activity) {
+    private void setupLifecycleObservers() {
         activity.getLifecycle()
                 .addObserver(
                         new LifecycleObserver() {
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
                                 appViewModel.position =
-                                        layoutManager.findFirstVisibleItemPositions(null)[0];
+                                        layoutManager.findFirstVisibleItemPosition();
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -165,7 +165,7 @@ final class RecyclerViewManager {
 
     private DataAdapter dataAdapter;
 
-    private void setupDataAdapter(MainActivity activity) {
+    private void setupDataAdapter() {
         dataAdapter =
                 new DataAdapter(
                         (Media item) -> {
@@ -179,6 +179,16 @@ final class RecyclerViewManager {
                                     .show();
                         });
         recyclerView.setAdapter(dataAdapter);
+        recyclerView.setRecyclerListener(
+                (RecyclerView.ViewHolder viewHolder) -> {
+                    // This is an optimization to reduce the memory usage of RecyclerView's
+                    // recycled view pool and good practice when using Glide with RecyclerView.
+                    if (viewHolder instanceof RowViewHolder) {
+                        RowViewHolder rowViewHolder = (RowViewHolder) viewHolder;
+                        Glide.with(activity).clear(rowViewHolder.imageView);
+                    }
+                });
+        recyclerView.setHasFixedSize(true);
     }
 
     private class DataAdapter extends RecyclerView.Adapter<RowViewHolder> {
@@ -192,10 +202,10 @@ final class RecyclerViewManager {
         @NonNull
         @Override
         public RowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View cell =
+            View cellView =
                     LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.staggered_grid_cell, parent, false);
-            return new RowViewHolder(cell);
+                            .inflate(R.layout.grid_cell, parent, false);
+            return new RowViewHolder(cellView);
         }
 
         @Override
@@ -211,16 +221,17 @@ final class RecyclerViewManager {
 
     private class RowViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView textView;
+        private final ImageView imageView;
 
-        public RowViewHolder(@NonNull View cellView) {
-            super(cellView);
-            textView = cellView.findViewById(R.id.text_staggered_grid_cell);
+        public RowViewHolder(@NonNull View imageView) {
+            super(imageView);
+            this.imageView = imageView.findViewById(R.id.image_grid_cell);
         }
 
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
-            textView.setText(data.getId());
-            textView.setOnClickListener(v -> onItemClick.onClick(data));
+            imageView.setOnClickListener(v -> onItemClick.onClick(data));
+            final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
+            Glide.with(activity).load(imageUri).into(imageView).clearOnDetach();
         }
     }
 

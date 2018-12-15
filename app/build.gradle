@@ -35,26 +35,39 @@ android {
 dependencies {
     // Local dependencies.
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     // AppCompat.
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+
     // CardView.
     implementation 'androidx.cardview:cardview:1.0.0'
+
     // SwipeRefreshLayout.
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
     // RecyclerView.
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
     // [Architecture Components](http://tinyurl.com/y7rad9t4).
     def lifecycle_version = "2.0.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
     // EventBus.
     implementation 'org.greenrobot:eventbus:3.1.1'
+
     // Paginate / Infinite Scrolling..
     implementation 'com.github.markomilos:paginate:0.5.1'
+
     // Giphy SDK.
     implementation('com.giphy.sdk:core:1.0.2@aar') {
-        transitive=true
+        transitive = true
     }
+
+    // Glide.
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
     // Android Test.
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'

@@ -16,7 +16,6 @@
 
 package com.nazmul.giphy_viewer;
 
-import android.os.Looper;
 import android.util.Log;
 
 import com.giphy.sdk.core.models.Media;
@@ -55,16 +54,8 @@ public class GiphyClient {
 
         CompletionHandler<ListMediaResponse> completionHandler =
                 (results, exception) -> {
-                    if (Looper.myLooper() == Looper.getMainLooper()) {
-                        Log.d("logtag", "makeTrendingRequest running in main thread");
-                    } else {
-                        Log.d("logtag", "🛑 makeTrendingRequest NOT running in main thread");
-                    }
-
+                    // This code runs in the main thread.
                     if (results != null && results.getData() != null) {
-                        for (Media gif : results.getData()) {
-                            Log.d("logtag", "gif.getId(): " + gif.getId());
-                        }
                         onResponseHandler.onResponse(results.getData());
                     }
                     if (runOnComplete != null) runOnComplete.run();

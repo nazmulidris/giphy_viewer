@@ -44,11 +44,10 @@ public class AppViewModel extends AndroidViewModel {
     public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
         Log.d("logtag", "requestDataRefresh: make request");
         GiphyClient.makeTrendingRequest(
-                null,
+                runOnRefreshComplete,
                 (List<Media> mediaList) -> {
                     Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
                     resetData(mediaList);
-                    if (runOnRefreshComplete != null) runOnRefreshComplete.run();
                 },
                 null);
     }
