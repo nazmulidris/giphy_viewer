@@ -111,7 +111,6 @@ final class RecyclerViewManager {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.UpdateDataEvent event) {
         Log.d("logtag", "onMessageEvent: UpdateDataEvent");
-        // TODO Replace this w/ a real implementation.
         isLoading = false;
         dataAdapter.notifyItemRangeInserted(
                 event.underlyingData.size() - event.newData.size(), event.newData.size());
@@ -121,7 +120,6 @@ final class RecyclerViewManager {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.RefreshDataEvent event) {
         Log.d("logtag", "onMessageEvent: RefreshDataEvent");
-        // TODO Replace this w/ a real implementation.
         setupInfiniteScrolling();
         dataAdapter.notifyDataSetChanged();
     }
@@ -130,7 +128,6 @@ final class RecyclerViewManager {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.ErrorDataEvent event) {
         Log.d("logtag", "onMessageEvent: ErrorDataEvent");
-        // TODO Replace this w/ a real implementation.
         isLoading = false;
         Toast.makeText(activity, "Network error occurred", Toast.LENGTH_LONG).show();
     }

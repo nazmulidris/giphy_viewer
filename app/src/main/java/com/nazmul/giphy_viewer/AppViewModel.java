@@ -89,7 +89,6 @@ public class AppViewModel extends AndroidViewModel {
         EventBus.getDefault().post(new UpdateDataEvent(newData, underlyingData));
     }
 
-    // TODO This should be called by Giphy API that clears existing data and replaces it w/ new data
     private void resetData(List<Media> newData) {
         underlyingData.clear();
         underlyingData.addAll(newData);
