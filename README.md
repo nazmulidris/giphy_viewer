@@ -53,11 +53,11 @@ Otherwise, push the code somewhere, and send me a link to the repo when you're d
 - [ ] Replace stubs w/ real API calls
     - [x] wire pull to refresh into adapter
     - [x] wire infinite scroll into adapter
-    - [ ] integrate w/ trending endpoint
+    - [x] integrate w/ trending endpoint
+    - [x] figure out how to use Glide and RecyclerView ViewHolder binding
+    - [x] open image into a full screen activity
     - [ ] wire search into adapter
     - [ ] integrate w/ search endpoint
-    - [ ] figure out how to use Glide and RecyclerView ViewHolder binding
-    - [ ] open image into a full screen activity
 
 # Research
 
