@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
@@ -124,6 +125,15 @@ final class RecyclerViewManager {
         dataAdapter.notifyDataSetChanged();
     }
 
+    /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AppViewModel.ErrorDataEvent event) {
+        Log.d("logtag", "onMessageEvent: ErrorDataEvent");
+        // TODO Replace this w/ a real implementation.
+        isLoading = false;
+        Toast.makeText(activity, "Network error occurred", Toast.LENGTH_LONG).show();
+    }
+
     // Layout Manager.
 
     private static final int GRID_SPAN_COUNT = 2;
@@ -140,8 +150,8 @@ final class RecyclerViewManager {
         activity.getLifecycle()
                 .addObserver(
                         new LifecycleObserver() {
-                            // The following code doesn't work w/ GridLayoutManager. It is meant
-                            // to restore the scrolled position of the RecyclerView on screen
+                            // STOPSHIP The following code doesn't work w/ GridLayoutManager. It is
+                            // meant to restore the scrolled position of the RecyclerView on screen
                             // orientation change.
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
@@ -169,15 +179,6 @@ final class RecyclerViewManager {
         dataAdapter =
                 new DataAdapter(
                         (Media item) -> {
-                            /*
-                            activity.startActivity(
-                                    new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl())));
-                            Toast.makeText(
-                                            appViewModel.getApplication().getApplicationContext(),
-                                            item.getUrl(),
-                                            Toast.LENGTH_SHORT)
-                                    .show();
-                            */
                             activity.startActivity(FullScreenActivity.getIntent(activity, item));
                         });
         recyclerView.setAdapter(dataAdapter);
@@ -236,7 +237,6 @@ final class RecyclerViewManager {
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
             GlideApp.with(activity.getApplicationContext())
                     .load(imageUri)
-                    .dontTransform()
                     .circleCrop()
                     .into(imageView)
                     .clearOnDetach();

@@ -45,9 +45,17 @@ public class AppViewModel extends AndroidViewModel {
         Log.d("logtag", "requestDataRefresh: make request");
         GiphyClient.makeTrendingRequest(
                 runOnRefreshComplete,
-                (List<Media> mediaList) -> {
-                    Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
-                    resetData(mediaList);
+                new GiphyClient.GiphyResultsHandler() {
+                    @Override
+                    public void onResponse(List<Media> mediaList) {
+                        Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
+                        resetData(mediaList);
+                    }
+
+                    @Override
+                    public void onError() {
+                        errorData();
+                    }
                 },
                 null);
     }
@@ -56,9 +64,17 @@ public class AppViewModel extends AndroidViewModel {
         Log.d("logtag", "requestGetMoreData: make request " + underlyingData.size());
         GiphyClient.makeTrendingRequest(
                 null,
-                (List<Media> mediaList) -> {
-                    Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
-                    updateData(mediaList);
+                new GiphyClient.GiphyResultsHandler() {
+                    @Override
+                    public void onResponse(List<Media> mediaList) {
+                        Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
+                        updateData(mediaList);
+                    }
+
+                    @Override
+                    public void onError() {
+                        errorData();
+                    }
                 },
                 underlyingData.size());
     }
@@ -77,6 +93,10 @@ public class AppViewModel extends AndroidViewModel {
         underlyingData.addAll(newData);
         Log.d("logtag", "resetData: data size: " + underlyingData.size());
         EventBus.getDefault().post(new RefreshDataEvent(underlyingData));
+    }
+
+    private void errorData() {
+        EventBus.getDefault().post(new ErrorDataEvent());
     }
 
     // Events.
@@ -100,4 +120,6 @@ public class AppViewModel extends AndroidViewModel {
             this.underlyingData = underlyingData;
         }
     }
+
+    public static class ErrorDataEvent {}
 }

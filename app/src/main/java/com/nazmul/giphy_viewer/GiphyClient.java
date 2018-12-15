@@ -60,7 +60,9 @@ public class GiphyClient {
                     executor.submit(
                             () -> {
                                 // This code runs in background thread.
-                                if (results != null && results.getData() != null) {
+                                if (results == null) {
+                                    onResponseHandler.onError();
+                                } else if (results.getData() != null) {
                                     onResponseHandler.onResponse(results.getData());
                                 }
                             });
@@ -82,5 +84,7 @@ public class GiphyClient {
 
     public interface GiphyResultsHandler {
         void onResponse(List<Media> mediaList);
+
+        void onError();
     }
 }
