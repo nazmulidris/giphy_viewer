@@ -40,6 +40,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import static com.nazmul.giphy_viewer.AppViewModel.TAG;
+
 final class RecyclerViewManager {
 
     private final RecyclerView recyclerView;
@@ -57,7 +59,7 @@ final class RecyclerViewManager {
     }
 
     private void setupEventListeners() {
-        Log.d("logtag", "setupEventListeners: ");
+        Log.d(TAG, "setupEventListeners: ");
         EventBus.getDefault().register(RecyclerViewManager.this);
     }
 
@@ -73,19 +75,19 @@ final class RecyclerViewManager {
      */
     public void setupInfiniteScrolling() {
         if (paginate == null) {
-            Log.d("logtag", "setupInfiniteScrolling: setting it up ONCE");
+            Log.d(TAG, "setupInfiniteScrolling: setting it up ONCE");
             Paginate.Callbacks callbacks =
                     new Paginate.Callbacks() {
                         @Override
                         public void onLoadMore() {
-                            Log.d("logtag", "onLoadMore: ");
+                            Log.d(TAG, "onLoadMore: ");
                             isLoading = true;
                             appViewModel.requestMoreData();
                         }
 
                         @Override
                         public boolean isLoading() {
-                            Log.d("logtag", "isLoading: " + isLoading);
+                            Log.d(TAG, "isLoading: " + isLoading);
                             return isLoading;
                         }
 
@@ -101,7 +103,7 @@ final class RecyclerViewManager {
                             .setLoadingListItemSpanSizeLookup(() -> GRID_SPAN_COUNT)
                             .build();
         } else {
-            Log.d("logtag", "setupInfiniteScrolling: already setup up");
+            Log.d(TAG, "setupInfiniteScrolling: already setup up");
         }
     }
 
@@ -110,7 +112,7 @@ final class RecyclerViewManager {
     /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.UpdateDataEvent event) {
-        Log.d("logtag", "onMessageEvent: UpdateDataEvent");
+        Log.d(TAG, "onMessageEvent: UpdateDataEvent");
         isLoading = false;
         dataAdapter.notifyItemRangeInserted(
                 event.underlyingData.size() - event.newData.size(), event.newData.size());
@@ -119,7 +121,7 @@ final class RecyclerViewManager {
     /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.RefreshDataEvent event) {
-        Log.d("logtag", "onMessageEvent: RefreshDataEvent");
+        Log.d(TAG, "onMessageEvent: RefreshDataEvent");
         setupInfiniteScrolling();
         dataAdapter.notifyDataSetChanged();
     }
@@ -127,7 +129,7 @@ final class RecyclerViewManager {
     /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.ErrorDataEvent event) {
-        Log.d("logtag", "onMessageEvent: ErrorDataEvent");
+        Log.d(TAG, "onMessageEvent: ErrorDataEvent");
         isLoading = false;
         Toast.makeText(activity, "Network error occurred", Toast.LENGTH_LONG).show();
     }

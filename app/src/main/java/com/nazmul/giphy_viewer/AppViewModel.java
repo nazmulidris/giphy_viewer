@@ -33,6 +33,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 public class AppViewModel extends AndroidViewModel {
 
+    public static final String TAG = "logtag";
     public int position = 0;
     public final CopyOnWriteArrayList<Media> underlyingData = new CopyOnWriteArrayList<>();
 
@@ -44,13 +45,13 @@ public class AppViewModel extends AndroidViewModel {
     // Methods that UI can use to request API calls.
 
     public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
-        Log.d("logtag", "requestDataRefresh: make request");
+        Log.d(TAG, "requestDataRefresh: make request");
         GiphyClient.makeTrendingRequest(
                 runOnRefreshComplete,
                 new GiphyClient.GiphyResultsHandler() {
                     @Override
                     public void onResponse(List<Media> mediaList) {
-                        Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
+                        Log.d(TAG, "requestDataRefresh: got response: " + mediaList.size());
                         resetData(mediaList);
                     }
 
@@ -63,13 +64,13 @@ public class AppViewModel extends AndroidViewModel {
     }
 
     public void requestMoreData() {
-        Log.d("logtag", "requestGetMoreData: make request " + underlyingData.size());
+        Log.d(TAG, "requestGetMoreData: make request " + underlyingData.size());
         GiphyClient.makeTrendingRequest(
                 null,
                 new GiphyClient.GiphyResultsHandler() {
                     @Override
                     public void onResponse(List<Media> mediaList) {
-                        Log.d("logtag", "requestDataRefresh: got response: " + mediaList.size());
+                        Log.d(TAG, "requestDataRefresh: got response: " + mediaList.size());
                         updateData(mediaList);
                     }
 
@@ -85,14 +86,14 @@ public class AppViewModel extends AndroidViewModel {
 
     private void updateData(List<Media> newData) {
         underlyingData.addAll(newData);
-        Log.d("logtag", "updateData: data size: " + underlyingData.size());
+        Log.d(TAG, "updateData: data size: " + underlyingData.size());
         EventBus.getDefault().post(new UpdateDataEvent(newData, underlyingData));
     }
 
     private void resetData(List<Media> newData) {
         underlyingData.clear();
         underlyingData.addAll(newData);
-        Log.d("logtag", "resetData: data size: " + underlyingData.size());
+        Log.d(TAG, "resetData: data size: " + underlyingData.size());
         EventBus.getDefault().post(new RefreshDataEvent(underlyingData));
     }
 

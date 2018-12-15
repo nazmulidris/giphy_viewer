@@ -33,6 +33,8 @@ import java.util.concurrent.Executors;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.nazmul.giphy_viewer.AppViewModel.TAG;
+
 public class GiphyClient {
     public static final String API_KEY = "mnVttajnx9Twmgp3vFbMQa3Gvn9Rv4Hg";
     public static final GPHApi client = new GPHApiClient(API_KEY);
@@ -70,9 +72,7 @@ public class GiphyClient {
                     if (runOnComplete != null) runOnComplete.run();
                 };
 
-        Log.d(
-                "logtag",
-                "makeTrendingRequest: offset: " + offset + ", limit: " + MAX_ITEMS_PER_REQUEST);
+        Log.d(TAG, "makeTrendingRequest: offset: " + offset + ", limit: " + MAX_ITEMS_PER_REQUEST);
 
         client.trending(
                 /* type= */ MediaType.gif,
