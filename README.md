@@ -10,6 +10,14 @@ the trending GIFs.
 
 3. When you click a GIF, it will take you to a fullscreen view of that GIF.
 
+# Video of app in action
+
+<img 
+  width="50%"
+  src="https://raw.githubusercontent.com/nazmulidris/giphy_viewer/master/docs/screencapture.gif"
+/>
+
+
 # References
 
 - [Giphy developer page](https://developers.giphy.com/) 
