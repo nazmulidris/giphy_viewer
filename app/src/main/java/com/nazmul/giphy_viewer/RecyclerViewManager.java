@@ -16,16 +16,22 @@
 
 package com.nazmul.giphy_viewer;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -45,7 +51,7 @@ final class RecyclerViewManager {
         setupEventListeners();
         setupLifecycleObservers(activity);
         setupLayoutManager();
-        setupDataAdapter();
+        setupDataAdapter(activity);
     }
 
     private void setupEventListeners() {
@@ -159,14 +165,16 @@ final class RecyclerViewManager {
 
     private DataAdapter dataAdapter;
 
-    private void setupDataAdapter() {
+    private void setupDataAdapter(MainActivity activity) {
         dataAdapter =
                 new DataAdapter(
-                        (String item) -> {
-                            // TODO Replace toast w/ actual handling of user clicking on an item.
+                        (Media item) -> {
+                            // TODO Replace this w/ actual handling of user clicking on an item.
+                            activity.startActivity(
+                                    new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl())));
                             Toast.makeText(
                                             appViewModel.getApplication().getApplicationContext(),
-                                            item,
+                                            item.getUrl(),
                                             Toast.LENGTH_SHORT)
                                     .show();
                         });
@@ -175,12 +183,10 @@ final class RecyclerViewManager {
 
     private class DataAdapter extends RecyclerView.Adapter<RowViewHolder> {
 
-        // TODO Replace String w/ actual data type from API.
-        private final ItemClickListener<String> onItemClick;
+        private final ItemClickListener<Media> onItemClickHandler;
 
-        // TODO Replace String w/ actual data type from API.
-        DataAdapter(ItemClickListener<String> onItemClick) {
-            this.onItemClick = onItemClick;
+        DataAdapter(ItemClickListener<Media> onItemClick) {
+            this.onItemClickHandler = onItemClick;
         }
 
         @NonNull
@@ -194,7 +200,7 @@ final class RecyclerViewManager {
 
         @Override
         public void onBindViewHolder(@NonNull RowViewHolder holder, int position) {
-            holder.bindDataToView(appViewModel.underlyingData.get(position), onItemClick);
+            holder.bindDataToView(appViewModel.underlyingData.get(position), onItemClickHandler);
         }
 
         @Override
@@ -212,9 +218,9 @@ final class RecyclerViewManager {
             textView = cellView.findViewById(R.id.text_staggered_grid_cell);
         }
 
-        public void bindDataToView(Object data, ItemClickListener<String> onItemClick) {
-            textView.setText(data.toString());
-            textView.setOnClickListener(v -> onItemClick.onClick(data.toString()));
+        public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
+            textView.setText(data.getId());
+            textView.setOnClickListener(v -> onItemClick.onClick(data));
         }
     }
 

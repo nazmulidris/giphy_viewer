@@ -18,6 +18,7 @@ package com.nazmul.giphy_viewer;
 
 import android.os.Looper;
 import android.util.Log;
+
 import com.giphy.sdk.core.models.Media;
 import com.giphy.sdk.core.models.enums.MediaType;
 import com.giphy.sdk.core.models.enums.RatingType;
@@ -25,7 +26,9 @@ import com.giphy.sdk.core.network.api.CompletionHandler;
 import com.giphy.sdk.core.network.api.GPHApi;
 import com.giphy.sdk.core.network.api.GPHApiClient;
 import com.giphy.sdk.core.network.response.ListMediaResponse;
+
 import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -67,10 +70,14 @@ public class GiphyClient {
                     if (runOnComplete != null) runOnComplete.run();
                 };
 
+        Log.d(
+                "logtag",
+                "makeTrendingRequest: offset: " + offset + ", limit: " + MAX_ITEMS_PER_REQUEST);
+
         client.trending(
                 /* type= */ MediaType.gif,
-                /* limit= */ offset,
-                /* offset= */ null,
+                /* limit= */ MAX_ITEMS_PER_REQUEST,
+                /* offset= */ offset,
                 /* rating */ RatingType.g,
                 /* completionHandler */ completionHandler);
     }
