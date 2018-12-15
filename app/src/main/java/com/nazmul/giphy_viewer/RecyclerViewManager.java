@@ -185,7 +185,7 @@ final class RecyclerViewManager {
                     // recycled view pool and good practice when using Glide with RecyclerView.
                     if (viewHolder instanceof RowViewHolder) {
                         RowViewHolder rowViewHolder = (RowViewHolder) viewHolder;
-                        Glide.with(activity).clear(rowViewHolder.imageView);
+                        Glide.with(activity.getApplicationContext()).clear(rowViewHolder.imageView);
                     }
                 });
         recyclerView.setHasFixedSize(true);
@@ -231,7 +231,10 @@ final class RecyclerViewManager {
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
             imageView.setOnClickListener(v -> onItemClick.onClick(data));
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
-            Glide.with(activity).load(imageUri).into(imageView).clearOnDetach();
+            Glide.with(activity.getApplicationContext())
+                    .load(imageUri)
+                    .into(imageView)
+                    .clearOnDetach();
         }
     }
 
