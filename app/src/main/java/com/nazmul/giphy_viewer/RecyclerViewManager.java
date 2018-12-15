@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
 
@@ -185,7 +185,8 @@ final class RecyclerViewManager {
                     // recycled view pool and good practice when using Glide with RecyclerView.
                     if (viewHolder instanceof RowViewHolder) {
                         RowViewHolder rowViewHolder = (RowViewHolder) viewHolder;
-                        Glide.with(activity.getApplicationContext()).clear(rowViewHolder.imageView);
+                        GlideApp.with(activity.getApplicationContext())
+                                .clear(rowViewHolder.imageView);
                     }
                 });
         recyclerView.setHasFixedSize(true);
@@ -231,8 +232,11 @@ final class RecyclerViewManager {
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
             imageView.setOnClickListener(v -> onItemClick.onClick(data));
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
-            Glide.with(activity.getApplicationContext())
+            GlideApp.with(activity.getApplicationContext())
                     .load(imageUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .dontTransform()
+                    .circleCrop()
                     .into(imageView)
                     .clearOnDetach();
         }
