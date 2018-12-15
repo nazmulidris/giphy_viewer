@@ -45,41 +45,95 @@ public class AppViewModel extends AndroidViewModel {
     // Methods that UI can use to request API calls.
 
     public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
-        Log.d(TAG, "requestDataRefresh: make request");
-        GiphyClient.makeTrendingRequest(
-                runOnRefreshComplete,
-                new GiphyClient.GiphyResultsHandler() {
-                    @Override
-                    public void onResponse(List<Media> mediaList) {
-                        Log.d(TAG, "requestDataRefresh: got response: " + mediaList.size());
-                        resetData(mediaList);
-                    }
+        if (!isSearchMode()) {
+            Log.d(TAG, "requestRefreshData: make trending request");
+            GiphyClient.makeTrendingRequest(
+                    runOnRefreshComplete,
+                    new GiphyClient.GiphyResultsHandler() {
+                        @Override
+                        public void onResponse(List<Media> mediaList) {
+                            Log.d(TAG, "requestRefreshData: got response: " + mediaList.size());
+                            resetData(mediaList);
+                        }
 
-                    @Override
-                    public void onError() {
-                        errorData();
-                    }
-                },
-                null);
+                        @Override
+                        public void onError() {
+                            errorData();
+                        }
+                    },
+                    null);
+        } else {
+            Log.d(TAG, "requestRefreshData: make search request");
+            GiphyClient.makeSearchRequest(
+                    query,
+                    runOnRefreshComplete,
+                    new GiphyClient.GiphyResultsHandler() {
+                        @Override
+                        public void onResponse(List<Media> mediaList) {
+                            Log.d(TAG, "requestRefreshData: got response: " + mediaList.size());
+                            resetData(mediaList);
+                        }
+
+                        @Override
+                        public void onError() {}
+                    },
+                    null);
+        }
     }
 
     public void requestMoreData() {
-        Log.d(TAG, "requestGetMoreData: make request " + underlyingData.size());
-        GiphyClient.makeTrendingRequest(
-                null,
-                new GiphyClient.GiphyResultsHandler() {
-                    @Override
-                    public void onResponse(List<Media> mediaList) {
-                        Log.d(TAG, "requestDataRefresh: got response: " + mediaList.size());
-                        updateData(mediaList);
-                    }
+        if (!isSearchMode()) {
+            Log.d(TAG, "requestMoreData: make trending request: offset= " + underlyingData.size());
+            GiphyClient.makeTrendingRequest(
+                    null,
+                    new GiphyClient.GiphyResultsHandler() {
+                        @Override
+                        public void onResponse(List<Media> mediaList) {
+                            Log.d(TAG, "requestMoreData: got response: " + mediaList.size());
+                            updateData(mediaList);
+                        }
 
-                    @Override
-                    public void onError() {
-                        errorData();
-                    }
-                },
-                underlyingData.size());
+                        @Override
+                        public void onError() {
+                            errorData();
+                        }
+                    },
+                    underlyingData.size());
+        } else {
+            Log.d(TAG, "requestMoreData: make search request: offset= " + underlyingData.size());
+            GiphyClient.makeSearchRequest(
+                    query,
+                    null,
+                    new GiphyClient.GiphyResultsHandler() {
+                        @Override
+                        public void onResponse(List<Media> mediaList) {
+                            Log.d(TAG, "requestMoreData: got response: " + mediaList.size());
+                            updateData(mediaList);
+                        }
+
+                        @Override
+                        public void onError() {}
+                    },
+                    underlyingData.size());
+        }
+    }
+
+    // Enable or disable "search" mode.
+    // With Search mode enabled, the "search" API endpoint is used.
+    // With it disabled, the "trending" API endpoint is used.
+
+    public String query = null;
+
+    public boolean isSearchMode() {
+        return query != null;
+    }
+
+    public void setSearchMode(String query) {
+        this.query = query;
+    }
+
+    public void clearSearchMode() {
+        query = null;
     }
 
     // Methods that modify the underlyingData & update the RecyclerView.

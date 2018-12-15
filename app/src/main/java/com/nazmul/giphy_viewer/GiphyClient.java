@@ -82,6 +82,39 @@ public class GiphyClient {
                 /* completionHandler */ completionHandler);
     }
 
+    public static void makeSearchRequest(
+            @NonNull String query,
+            @Nullable Runnable runOnComplete,
+            @NonNull GiphyResultsHandler onResponseHandler,
+            @Nullable Integer offset) {
+
+        CompletionHandler<ListMediaResponse> completionHandler =
+                (results, exception) -> {
+                    executor.submit(
+                            () -> {
+                                // This code runs in background thread.
+                                if (results == null) {
+                                    onResponseHandler.onError();
+                                } else if (results.getData() != null) {
+                                    onResponseHandler.onResponse(results.getData());
+                                }
+                            });
+                    // This code runs in the main thread.
+                    if (runOnComplete != null) runOnComplete.run();
+                };
+
+        Log.d(TAG, "makeSearchRequest: offset: " + offset + ", limit: " + MAX_ITEMS_PER_REQUEST);
+
+        client.search(
+                /* query= */ query,
+                /* type= */ MediaType.gif,
+                /* limit= */ MAX_ITEMS_PER_REQUEST,
+                /* offset= */ offset,
+                /* rating= */ RatingType.g,
+                /* lang= */ null,
+                /* completionHandler= */ completionHandler);
+    }
+
     public interface GiphyResultsHandler {
         void onResponse(List<Media> mediaList);
 

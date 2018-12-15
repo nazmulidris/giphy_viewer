@@ -17,12 +17,18 @@
 package com.nazmul.giphy_viewer;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import static com.nazmul.giphy_viewer.AppViewModel.*;
 
 public final class MainActivity extends AppCompatActivity {
 
@@ -34,6 +40,48 @@ public final class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        setupSearchView(searchView, searchMenuItem);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void setupSearchView(SearchView searchView, MenuItem searchMenuItem) {
+        searchView.setOnCloseListener(
+                new SearchView.OnCloseListener() {
+                    @Override
+                    public boolean onClose() {
+                        Log.d(TAG, "onClose: clear search mode, and request refresh");
+                        appViewModel.clearSearchMode();
+                        appViewModel.requestRefreshData(null);
+                        return false;
+                    }
+                });
+
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        Log.d(TAG, "onQueryTextSubmit: " + query);
+                        if (!query.isEmpty()) {
+                            searchMenuItem.collapseActionView();
+                            appViewModel.setSearchMode(query);
+                            appViewModel.requestRefreshData(null);
+                        }
+
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        return true;
+                    }
+                });
     }
 
     private void init() {
