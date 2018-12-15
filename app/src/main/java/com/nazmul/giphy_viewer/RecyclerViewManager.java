@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
@@ -221,7 +222,11 @@ final class RecyclerViewManager {
         public void bindDataToView(Media data, ItemClickListener<Media> onItemClick) {
             imageView.setOnClickListener(v -> onItemClick.onClick(data));
             final Uri imageUri = Uri.parse(data.getImages().getFixedWidthDownsampled().getGifUrl());
-            imageView.setImageURI(imageUri);
+            imageView.setController(
+                    Fresco.newDraweeControllerBuilder()
+                            .setUri(imageUri)
+                            .setAutoPlayAnimations(true)
+                            .build());
         }
     }
 

@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
 
@@ -34,11 +33,11 @@ public class FullScreenActivity extends Activity {
         setContentView(R.layout.fullscreen_activity);
         Uri imageUri = getIntent().getData();
         SimpleDraweeView gifView = findViewById(R.id.fullscreen_gif);
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
-                .setUri(imageUri)
-                .setAutoPlayAnimations(true)
-                .build();
-        gifView.setController(controller);
+        gifView.setController(
+                Fresco.newDraweeControllerBuilder()
+                        .setUri(imageUri)
+                        .setAutoPlayAnimations(true)
+                        .build());
     }
 
     public static Intent getIntent(Context context, Media item) {

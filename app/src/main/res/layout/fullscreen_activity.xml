@@ -24,6 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        fresco:viewAspectRatio="1.33" />
+        fresco:viewAspectRatio="1" />
 
 </LinearLayout>
