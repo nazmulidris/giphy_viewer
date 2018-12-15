@@ -1,4 +1,4 @@
-# Problem Definition
+# App Description
 
 This app is essentially a small [Giphy browser](https://giphy.com/). Here's the high-level
 description.
