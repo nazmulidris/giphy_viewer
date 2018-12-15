@@ -42,6 +42,15 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
+/**
+ * Creates and manages the RecyclerView that is used by the {@link MainActivity}.
+ *
+ * <ol>
+ *   <li>It is wired via EventBus to the {@link GiphyClient} that lets the adapter know when
+ *       underlying data has changed in the {@link AppViewModel}.
+ *   <li>The RecyclerView uses a StaggeredGridLayoutManager. And Fresco for image loading.
+ * </ol>
+ */
 final class RecyclerViewManager {
 
     private final RecyclerView recyclerView;
@@ -52,14 +61,15 @@ final class RecyclerViewManager {
         this.recyclerView = recyclerView;
         this.appViewModel = ViewModelProviders.of(activity).get(AppViewModel.class);
         this.activity = activity;
-        setupEventListeners();
+        setupEventBusSubscribers();
         setupLifecycleObservers();
         setupLayoutManager();
         setupDataAdapter();
     }
 
-    private void setupEventListeners() {
-        Log.d(TAG, "setupEventListeners: ");
+    private void setupEventBusSubscribers() {
+        Log.d(TAG, "setupEventBusSubscribers: ");
+        // The subscriber must have @Subscribe annotated methods.
         EventBus.getDefault().register(RecyclerViewManager.this);
     }
 
@@ -156,17 +166,22 @@ final class RecyclerViewManager {
                         new LifecycleObserver() {
                             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                             void saveListPosition() {
-                                appViewModel.position =
+                                final int firstVisibleItemPosition =
                                         layoutManager.findFirstVisibleItemPositions(null)[0];
+                                appViewModel.position = firstVisibleItemPosition;
+                                Log.d(TAG, "saveListPosition: " + firstVisibleItemPosition);
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_START)
                             void restoreListPosition() {
                                 layoutManager.scrollToPosition(appViewModel.position);
+                                Log.d(TAG, "restoreListPosition: " + appViewModel.position);
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                             void unregisterEventBus() {
+                                Log.d(TAG, "unregisterEventBus: ON_DESTROY");
+                                // The subscriber must have @Subscribe annotated methods.
                                 EventBus.getDefault().unregister(RecyclerViewManager.this);
                             }
                         });

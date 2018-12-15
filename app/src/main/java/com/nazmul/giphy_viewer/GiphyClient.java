@@ -35,11 +35,38 @@ import androidx.annotation.Nullable;
 
 import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
+/**
+ * Wraps the <a href="https://github.com/Giphy/giphy-android-sdk-core">Giphy Android SDK</a> for use
+ * by the {@link AppViewModel}.
+ *
+ * <ol>
+ *   <li>This class spawns its own executors under the covers and its own network classes (via <a
+ *       href="http://tinyurl.com/ybrz4wod">DefaultNetworkSession</a> ). When the {@link
+ *       AppViewModel} is destroyed, the network resources are garbage collected as well.
+ *   <li>The <a href="http://tinyurl.com/ydac4992">Media</a> class is the Giphy API model that is
+ *       used the most.
+ *   <li>The source code for the <a href="http://tinyurl.com/ycvfz5mk">GPHApiClient can be found
+ *       here.</a>
+ * </ol>
+ */
 public class GiphyClient {
     public static final String API_KEY = "mnVttajnx9Twmgp3vFbMQa3Gvn9Rv4Hg";
-    public static final GPHApi client = new GPHApiClient(API_KEY);
     public static final int MAX_ITEMS_PER_REQUEST = 25;
-    public static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    // Constructor.
+
+    public final GPHApi client;
+    public final ExecutorService executor;
+
+    public GiphyClient() {
+        client = new GPHApiClient(API_KEY);
+        executor = Executors.newSingleThreadExecutor();
+    }
+
+    /** {@link AppViewModel} calls this as part of its cleanup. */
+    public void shutdown() {
+        executor.shutdown();
+    }
 
     /**
      * @param runOnComplete This Runnable will be executed after the API response is received. If
@@ -52,7 +79,7 @@ public class GiphyClient {
      *     This is usually going to the size of the number of entries that are already downloaded
      *     (ie the size of the underlying data).
      */
-    public static void makeTrendingRequest(
+    public void makeTrendingRequest(
             @Nullable Runnable runOnComplete,
             @NonNull GiphyResultsHandler onResponseHandler,
             @Nullable Integer offset) {
@@ -82,7 +109,7 @@ public class GiphyClient {
                 /* completionHandler */ completionHandler);
     }
 
-    public static void makeSearchRequest(
+    public void makeSearchRequest(
             @NonNull String query,
             @Nullable Runnable runOnComplete,
             @NonNull GiphyResultsHandler onResponseHandler,

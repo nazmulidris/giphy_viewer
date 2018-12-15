@@ -31,15 +31,39 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 
+/**
+ * Creates and manages data that survives past multiple {@link MainActivity} creation and
+ * destruction events (due to screen orientation changes).
+ *
+ * <ol>
+ *   <li>
+ *       <p>This class should not contain any references to Views.
+ *   <li>When the {@link MainActivity} is destroyed by the user leaving the app (by pressing back,
+ *       not home), this ViewModel is cleaned up and destroyed.
+ * </ol>
+ */
 public class AppViewModel extends AndroidViewModel {
 
     public static final String TAG = "logtag";
     public int position = 0;
     public final CopyOnWriteArrayList<Media> underlyingData = new CopyOnWriteArrayList<>();
+    public final GiphyClient giphyClient;
 
+    /** ViewModel.ON_CREATE */
     public AppViewModel(@NonNull Application application) {
         super(application);
         Fresco.initialize(application);
+        giphyClient = new GiphyClient();
+        Log.d(TAG, "AppViewModel: create giphyClient and init Fresco");
+    }
+
+    /** ViewModel.ON_DESTROY */
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.d(TAG, "AppViewModel: shutdown giphyClient and Fresco");
+        Fresco.shutDown();
+        giphyClient.shutdown();
     }
 
     // Methods that UI can use to request API calls.
@@ -47,7 +71,7 @@ public class AppViewModel extends AndroidViewModel {
     public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
         if (!isSearchMode()) {
             Log.d(TAG, "requestRefreshData: make trending request");
-            GiphyClient.makeTrendingRequest(
+            giphyClient.makeTrendingRequest(
                     runOnRefreshComplete,
                     new GiphyClient.GiphyResultsHandler() {
                         @Override
@@ -64,7 +88,7 @@ public class AppViewModel extends AndroidViewModel {
                     null);
         } else {
             Log.d(TAG, "requestRefreshData: make search request");
-            GiphyClient.makeSearchRequest(
+            giphyClient.makeSearchRequest(
                     query,
                     runOnRefreshComplete,
                     new GiphyClient.GiphyResultsHandler() {
@@ -84,7 +108,7 @@ public class AppViewModel extends AndroidViewModel {
     public void requestMoreData() {
         if (!isSearchMode()) {
             Log.d(TAG, "requestMoreData: make trending request: offset= " + underlyingData.size());
-            GiphyClient.makeTrendingRequest(
+            giphyClient.makeTrendingRequest(
                     null,
                     new GiphyClient.GiphyResultsHandler() {
                         @Override
@@ -101,7 +125,7 @@ public class AppViewModel extends AndroidViewModel {
                     underlyingData.size());
         } else {
             Log.d(TAG, "requestMoreData: make search request: offset= " + underlyingData.size());
-            GiphyClient.makeSearchRequest(
+            giphyClient.makeSearchRequest(
                     query,
                     null,
                     new GiphyClient.GiphyResultsHandler() {

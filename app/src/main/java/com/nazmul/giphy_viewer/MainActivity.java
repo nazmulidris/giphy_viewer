@@ -28,8 +28,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import static com.nazmul.giphy_viewer.AppViewModel.*;
+import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
+/**
+ * The main UI of the application that contains the Toolbar, SearchView, and RecyclerView. It
+ * creates a {@link AppViewModel} that is stable across orientation changes, and is only created or
+ * destroyed when the user starts the app (launching it from the launcher, not just switching to an
+ * already running instance), or exits it (by pressing back and not not just pressing home or
+ * switching between apps).
+ */
 public final class MainActivity extends AppCompatActivity {
 
     private ViewHolder viewHolder;
@@ -50,6 +57,23 @@ public final class MainActivity extends AppCompatActivity {
         setupSearchView(searchView, searchMenuItem);
         return super.onCreateOptionsMenu(menu);
     }
+
+    // Cold boot the Activity.
+
+    private void init() {
+        setupViewModel();
+        viewHolder = new ViewHolder(this);
+        viewHolder.setupSwipeRefreshLayout();
+        viewHolder.setupToolbar();
+        viewHolder.setupRecyclerView();
+        loadData();
+    }
+
+    private void setupViewModel() {
+        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
+    }
+
+    // SearchView in Toolbar.
 
     private void setupSearchView(SearchView searchView, MenuItem searchMenuItem) {
         searchView.setOnCloseListener(
@@ -82,16 +106,17 @@ public final class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+
+        // When activity has been thru an orientation change, make sure to restore the SearchView
+        // state (if it was in search mode before the orientation change).
+        if (appViewModel.isSearchMode()) {
+            searchMenuItem.expandActionView();
+            searchView.setIconified(false);
+            searchView.setQuery(appViewModel.query, false);
+        }
     }
 
-    private void init() {
-        setupViewModel();
-        viewHolder = new ViewHolder(this);
-        viewHolder.setupSwipeRefreshLayout();
-        viewHolder.setupToolbar();
-        viewHolder.setupRecyclerView();
-        loadData();
-    }
+    // Load fresh data into the activity.
 
     private void loadData() {
         if (appViewModel.underlyingData.isEmpty()) {
@@ -107,11 +132,8 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupViewModel() {
-        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
-    }
-
-    final class ViewHolder {
+    /** Convenience class that holds all the views of this MainActivity in one place */
+    private final class ViewHolder {
 
         MainActivity activity;
         Toolbar toolbar;
