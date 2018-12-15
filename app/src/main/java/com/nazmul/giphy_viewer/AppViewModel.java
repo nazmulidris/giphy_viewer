@@ -23,8 +23,8 @@ import com.giphy.sdk.core.models.Media;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +33,7 @@ import androidx.lifecycle.AndroidViewModel;
 public class AppViewModel extends AndroidViewModel {
 
     public int position = 0;
-    public ArrayList<Media> underlyingData = new ArrayList<>();
+    public final CopyOnWriteArrayList<Media> underlyingData = new CopyOnWriteArrayList<>();
 
     public AppViewModel(@NonNull Application application) {
         super(application);

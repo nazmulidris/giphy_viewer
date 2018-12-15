@@ -109,7 +109,7 @@ final class RecyclerViewManager {
     // EventBus.
 
     /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.UpdateDataEvent event) {
         Log.d("logtag", "onMessageEvent: UpdateDataEvent");
         // TODO Replace this w/ a real implementation.
@@ -119,7 +119,7 @@ final class RecyclerViewManager {
     }
 
     /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AppViewModel.RefreshDataEvent event) {
         Log.d("logtag", "onMessageEvent: RefreshDataEvent");
         // TODO Replace this w/ a real implementation.

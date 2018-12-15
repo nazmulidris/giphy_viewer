@@ -27,6 +27,8 @@ import com.giphy.sdk.core.network.api.GPHApiClient;
 import com.giphy.sdk.core.network.response.ListMediaResponse;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +37,7 @@ public class GiphyClient {
     public static final String API_KEY = "mnVttajnx9Twmgp3vFbMQa3Gvn9Rv4Hg";
     public static final GPHApi client = new GPHApiClient(API_KEY);
     public static final int MAX_ITEMS_PER_REQUEST = 25;
+    public static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * @param runOnComplete This Runnable will be executed after the API response is received. If
@@ -54,10 +57,14 @@ public class GiphyClient {
 
         CompletionHandler<ListMediaResponse> completionHandler =
                 (results, exception) -> {
+                    executor.submit(
+                            () -> {
+                                // This code runs in background thread.
+                                if (results != null && results.getData() != null) {
+                                    onResponseHandler.onResponse(results.getData());
+                                }
+                            });
                     // This code runs in the main thread.
-                    if (results != null && results.getData() != null) {
-                        onResponseHandler.onResponse(results.getData());
-                    }
                     if (runOnComplete != null) runOnComplete.run();
                 };
 
