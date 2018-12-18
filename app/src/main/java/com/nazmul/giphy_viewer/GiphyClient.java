@@ -47,7 +47,7 @@ import static com.nazmul.giphy_viewer.AppViewModel.TAG;
  *       here.</a>
  * </ol>
  */
-public class GiphyClient {
+final class GiphyClient {
     public static final String API_KEY = "mnVttajnx9Twmgp3vFbMQa3Gvn9Rv4Hg";
     public static final int MAX_ITEMS_PER_REQUEST = 25;
 

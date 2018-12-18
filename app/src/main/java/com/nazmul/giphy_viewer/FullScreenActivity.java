@@ -33,7 +33,7 @@ import com.giphy.sdk.core.models.Media;
  * Displays a full screen animated GIF, given the URI that is passed in the Intent that creates it.
  * Fresco is used to actually load and render the animated GIF.
  */
-public class FullScreenActivity extends Activity {
+public final class FullScreenActivity extends Activity {
 
     public static final String WIDTH = "width";
     public static final String HEIGHT = "height";

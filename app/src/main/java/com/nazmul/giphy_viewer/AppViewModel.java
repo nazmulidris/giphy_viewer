@@ -42,7 +42,7 @@ import androidx.lifecycle.AndroidViewModel;
  *       not home), this ViewModel is cleaned up and destroyed.
  * </ol>
  */
-public class AppViewModel extends AndroidViewModel {
+public final class AppViewModel extends AndroidViewModel {
 
     public static final String TAG = "logtag";
 

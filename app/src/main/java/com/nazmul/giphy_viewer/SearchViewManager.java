@@ -6,11 +6,14 @@ import android.widget.SearchView;
 
 import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
-public class SearchViewManager {
-    // SearchView in Toolbar.
+/**
+ * Creates and manages the SearchView (which is in the Toolbar) that is used by the {@link
+ * MainActivity}.
+ */
+final class SearchViewManager {
 
-    public void setupSearchView(SearchView searchView, MenuItem searchMenuItem,
-                                AppViewModel appViewModel) {
+    void setupSearchView(
+            SearchView searchView, MenuItem searchMenuItem, AppViewModel appViewModel) {
         searchView.setOnCloseListener(
                 new SearchView.OnCloseListener() {
                     @Override
@@ -50,6 +53,4 @@ public class SearchViewManager {
             searchView.setQuery(appViewModel.query, false);
         }
     }
-
-
 }
