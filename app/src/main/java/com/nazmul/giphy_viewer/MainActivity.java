@@ -119,7 +119,7 @@ public final class MainActivity extends AppCompatActivity {
     // Load fresh data into the activity.
 
     private void loadData() {
-        if (appViewModel.underlyingData.isEmpty()) {
+        if (appViewModel.getUnderlyingData().isEmpty()) {
             // Activity has no data, so perform a refresh now.
             viewHolder.swipeRefreshLayout.setRefreshing(true);
             viewHolder.onRefreshGestureHandler.onRefresh();

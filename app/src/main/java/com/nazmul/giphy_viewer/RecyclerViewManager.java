@@ -168,14 +168,14 @@ final class RecyclerViewManager {
                             void saveListPosition() {
                                 final int firstVisibleItemPosition =
                                         layoutManager.findFirstVisibleItemPositions(null)[0];
-                                appViewModel.position = firstVisibleItemPosition;
+                                appViewModel.setPosition(firstVisibleItemPosition);
                                 Log.d(TAG, "saveListPosition: " + firstVisibleItemPosition);
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_START)
                             void restoreListPosition() {
-                                layoutManager.scrollToPosition(appViewModel.position);
-                                Log.d(TAG, "restoreListPosition: " + appViewModel.position);
+                                layoutManager.scrollToPosition(appViewModel.getPosition());
+                                Log.d(TAG, "restoreListPosition: " + appViewModel.getPosition());
                             }
 
                             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -195,8 +195,7 @@ final class RecyclerViewManager {
         dataAdapter =
                 new DataAdapter(
                         (Media item) -> {
-                            activity.startActivity(
-                                    FullScreenActivity.getIntent(activity, item));
+                            activity.startActivity(FullScreenActivity.getIntent(activity, item));
                         });
         recyclerView.setAdapter(dataAdapter);
     }
@@ -220,12 +219,13 @@ final class RecyclerViewManager {
 
         @Override
         public void onBindViewHolder(@NonNull RowViewHolder holder, int position) {
-            holder.bindDataToView(appViewModel.underlyingData.get(position), onItemClickHandler);
+            holder.bindDataToView(
+                    appViewModel.getUnderlyingData().get(position), onItemClickHandler);
         }
 
         @Override
         public int getItemCount() {
-            return appViewModel.underlyingData.size();
+            return appViewModel.getUnderlyingData().size();
         }
     }
 

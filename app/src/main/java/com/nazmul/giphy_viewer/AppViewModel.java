@@ -45,9 +45,8 @@ import androidx.lifecycle.AndroidViewModel;
 public class AppViewModel extends AndroidViewModel {
 
     public static final String TAG = "logtag";
-    public int position = 0;
-    public final ArrayList<Media> underlyingData = new ArrayList<>();
-    public final GiphyClient giphyClient;
+
+    private final GiphyClient giphyClient;
 
     /** ViewModel.ON_CREATE */
     public AppViewModel(@NonNull Application application) {
@@ -63,6 +62,26 @@ public class AppViewModel extends AndroidViewModel {
         super.onCleared();
         Log.d(TAG, "AppViewModel: shutdown giphyClient and Fresco");
         Fresco.shutDown();
+    }
+
+    // Current scrolled position of the RecyclerView.
+
+    private int position = 0;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    // Underlying data storage.
+
+    private final ArrayList<Media> underlyingData = new ArrayList<>();
+
+    public ArrayList<Media> getUnderlyingData() {
+        return underlyingData;
     }
 
     // Methods that UI can use to request API calls.
