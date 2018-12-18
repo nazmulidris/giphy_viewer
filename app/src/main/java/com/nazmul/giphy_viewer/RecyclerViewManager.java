@@ -196,7 +196,7 @@ final class RecyclerViewManager {
                 new DataAdapter(
                         (Media item) -> {
                             activity.startActivity(
-                                    FullScreenActivity.getIntent(activity, item, true));
+                                    FullScreenActivity.getIntent(activity, item));
                         });
         recyclerView.setAdapter(dataAdapter);
     }

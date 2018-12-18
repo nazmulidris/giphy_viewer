@@ -18,11 +18,11 @@ package com.nazmul.giphy_viewer;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.content.ClipboardManager;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -56,9 +56,18 @@ public class FullScreenActivity extends Activity {
                         .setUri(imageUri)
                         .setAutoPlayAnimations(true)
                         .build());
+
+        copyUrlToClipboard(imageUri);
     }
 
-    public static Intent getIntent(Context context, Media item, boolean copyToClipboard) {
+    private void copyUrlToClipboard(Uri imageUri) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(URL, imageUri.toString());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(this, "URL copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
+    public static Intent getIntent(Context context, Media item) {
         Intent intent = new Intent(context, FullScreenActivity.class);
         final String url = item.getImages().getOriginal().getGifUrl();
         intent.setData(Uri.parse(url));
@@ -66,15 +75,6 @@ public class FullScreenActivity extends Activity {
         intent.putExtra(WIDTH, width);
         final int height = item.getImages().getOriginal().getHeight();
         intent.putExtra(HEIGHT, height);
-
-        if (copyToClipboard) {
-            ClipboardManager clipboard =
-                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(URL, url);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(context, "URL copied to clipbiard", Toast.LENGTH_SHORT).show();
-        }
-
         return intent;
     }
 }
