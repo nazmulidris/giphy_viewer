@@ -27,8 +27,6 @@ import com.giphy.sdk.core.network.api.GPHApiClient;
 import com.giphy.sdk.core.network.response.ListMediaResponse;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,16 +54,9 @@ public class GiphyClient {
     // Constructor.
 
     public final GPHApi client;
-    public final ExecutorService executor;
 
     public GiphyClient() {
         client = new GPHApiClient(API_KEY);
-        executor = Executors.newSingleThreadExecutor();
-    }
-
-    /** {@link AppViewModel} calls this as part of its cleanup. */
-    public void shutdown() {
-        executor.shutdown();
     }
 
     /**
@@ -86,16 +77,12 @@ public class GiphyClient {
 
         CompletionHandler<ListMediaResponse> completionHandler =
                 (results, exception) -> {
-                    executor.submit(
-                            () -> {
-                                // This code runs in background thread.
-                                if (results == null) {
-                                    onResponseHandler.onError();
-                                } else if (results.getData() != null) {
-                                    onResponseHandler.onResponse(results.getData());
-                                }
-                            });
                     // This code runs in the main thread.
+                    if (results == null) {
+                        onResponseHandler.onError();
+                    } else if (results.getData() != null) {
+                        onResponseHandler.onResponse(results.getData());
+                    }
                     if (runOnComplete != null) runOnComplete.run();
                 };
 
@@ -117,16 +104,12 @@ public class GiphyClient {
 
         CompletionHandler<ListMediaResponse> completionHandler =
                 (results, exception) -> {
-                    executor.submit(
-                            () -> {
-                                // This code runs in background thread.
-                                if (results == null) {
-                                    onResponseHandler.onError();
-                                } else if (results.getData() != null) {
-                                    onResponseHandler.onResponse(results.getData());
-                                }
-                            });
                     // This code runs in the main thread.
+                    if (results == null) {
+                        onResponseHandler.onError();
+                    } else if (results.getData() != null) {
+                        onResponseHandler.onResponse(results.getData());
+                    }
                     if (runOnComplete != null) runOnComplete.run();
                 };
 

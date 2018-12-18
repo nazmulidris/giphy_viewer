@@ -24,8 +24,8 @@ import com.giphy.sdk.core.models.Media;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +46,7 @@ public class AppViewModel extends AndroidViewModel {
 
     public static final String TAG = "logtag";
     public int position = 0;
-    public final CopyOnWriteArrayList<Media> underlyingData = new CopyOnWriteArrayList<>();
+    public final ArrayList<Media> underlyingData = new ArrayList<>();
     public final GiphyClient giphyClient;
 
     /** ViewModel.ON_CREATE */
@@ -63,7 +63,6 @@ public class AppViewModel extends AndroidViewModel {
         super.onCleared();
         Log.d(TAG, "AppViewModel: shutdown giphyClient and Fresco");
         Fresco.shutDown();
-        giphyClient.shutdown();
     }
 
     // Methods that UI can use to request API calls.
