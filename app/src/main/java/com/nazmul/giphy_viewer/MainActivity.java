@@ -17,7 +17,6 @@
 package com.nazmul.giphy_viewer;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
@@ -27,8 +26,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
 /**
  * The main UI of the application that contains the Toolbar, SearchView, and RecyclerView. It
@@ -54,7 +51,7 @@ public final class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_activity_actions, menu);
         MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        setupSearchView(searchView, searchMenuItem);
+        viewHolder.setupSearchView(searchView, searchMenuItem, appViewModel);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -71,49 +68,6 @@ public final class MainActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
-    }
-
-    // SearchView in Toolbar.
-
-    private void setupSearchView(SearchView searchView, MenuItem searchMenuItem) {
-        searchView.setOnCloseListener(
-                new SearchView.OnCloseListener() {
-                    @Override
-                    public boolean onClose() {
-                        Log.d(TAG, "onClose: clear search mode, and request refresh");
-                        appViewModel.clearSearchMode();
-                        appViewModel.requestRefreshData(null);
-                        return false;
-                    }
-                });
-
-        searchView.setOnQueryTextListener(
-                new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        Log.d(TAG, "onQueryTextSubmit: " + query);
-                        if (!query.isEmpty()) {
-                            searchMenuItem.collapseActionView();
-                            appViewModel.setSearchMode(query);
-                            appViewModel.requestRefreshData(null);
-                        }
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        return true;
-                    }
-                });
-
-        // When activity has been thru an orientation change, make sure to restore the SearchView
-        // state (if it was in search mode before the orientation change).
-        if (appViewModel.isSearchMode()) {
-            searchMenuItem.expandActionView();
-            searchView.setIconified(false);
-            searchView.setQuery(appViewModel.query, false);
-        }
     }
 
     // Load fresh data into the activity.
@@ -142,6 +96,7 @@ public final class MainActivity extends AppCompatActivity {
         RecyclerViewManager recyclerViewManager;
         SwipeRefreshLayout.OnRefreshListener onRefreshGestureHandler;
         Runnable runOnRefreshComplete;
+        SearchViewManager searchViewManager;
 
         ViewHolder(MainActivity mainActivity) {
             this.activity = mainActivity;
@@ -162,6 +117,12 @@ public final class MainActivity extends AppCompatActivity {
         void setupRecyclerView() {
             recyclerView = findViewById(R.id.recycler_view);
             recyclerViewManager = new RecyclerViewManager(activity, recyclerView);
+        }
+
+        void setupSearchView(
+                SearchView searchView, MenuItem searchMenuItem, AppViewModel appViewModel) {
+            searchViewManager = new SearchViewManager();
+            searchViewManager.setupSearchView(searchView, searchMenuItem, appViewModel);
         }
     }
 }
