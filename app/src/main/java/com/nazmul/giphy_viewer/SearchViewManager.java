@@ -4,6 +4,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
+import java.util.Objects;
+
 import static com.nazmul.giphy_viewer.AppViewModel.TAG;
 
 /**
@@ -19,7 +21,7 @@ final class SearchViewManager {
                     @Override
                     public boolean onClose() {
                         Log.d(TAG, "onClose: clear search mode, and request refresh");
-                        appViewModel.clearSearchMode();
+                        appViewModel.setTrendingMode();
                         appViewModel.requestRefreshData(null);
                         return false;
                     }
@@ -47,10 +49,11 @@ final class SearchViewManager {
 
         // When activity has been thru an orientation change, make sure to restore the SearchView
         // state (if it was in search mode before the orientation change).
-        if (appViewModel.isSearchMode()) {
+        AppMode appMode = Objects.requireNonNull(appViewModel.getAppModeLiveData().getValue());
+        if (appMode.isSearchingMode()) {
             searchMenuItem.expandActionView();
             searchView.setIconified(false);
-            searchView.setQuery(appViewModel.query, false);
+            searchView.setQuery(appMode.getSearchQuery(), false);
         }
     }
 }

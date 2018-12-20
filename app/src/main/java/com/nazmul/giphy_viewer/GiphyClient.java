@@ -97,7 +97,7 @@ final class GiphyClient {
     }
 
     public void makeSearchRequest(
-            @NonNull String query,
+            @Nullable String query,
             @Nullable Runnable runOnComplete,
             @NonNull GiphyResultsHandler onResponseHandler,
             @Nullable Integer offset) {
@@ -116,7 +116,7 @@ final class GiphyClient {
         Log.d(TAG, "makeSearchRequest: offset: " + offset + ", limit: " + MAX_ITEMS_PER_REQUEST);
 
         client.search(
-                /* query= */ query,
+                /* query= */ query == null ? "" : query,
                 /* type= */ MediaType.gif,
                 /* limit= */ MAX_ITEMS_PER_REQUEST,
                 /* offset= */ offset,

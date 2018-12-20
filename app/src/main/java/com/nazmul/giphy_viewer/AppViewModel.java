@@ -26,10 +26,13 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 /**
  * Creates and manages data that survives past multiple {@link MainActivity} creation and
@@ -46,22 +49,39 @@ public final class AppViewModel extends AndroidViewModel {
 
     public static final String TAG = "logtag";
 
-    private final GiphyClient giphyClient;
+    private final GiphyClient giphyClient = new GiphyClient();
+
+    private final MutableLiveData<AppMode> appModeLiveData = new MutableLiveData<>();
 
     /** ViewModel.ON_CREATE */
     public AppViewModel(@NonNull Application application) {
         super(application);
         Fresco.initialize(application);
-        giphyClient = new GiphyClient();
-        Log.d(TAG, "AppViewModel: create giphyClient and init Fresco");
+        appModeLiveData.setValue(AppMode.Builder.builder().mode(AppMode.Mode.Trending).build());
+        Log.d(TAG, "AppViewModel: create giphyClient, init Fresco, set appMode");
     }
 
     /** ViewModel.ON_DESTROY */
     @Override
     protected void onCleared() {
         super.onCleared();
-        Log.d(TAG, "AppViewModel: shutdown giphyClient and Fresco");
+        Log.d(TAG, "AppViewModel: shutdown Fresco");
         Fresco.shutDown();
+    }
+
+    // Manage AppMode.
+
+    public LiveData<AppMode> getAppModeLiveData() {
+        return appModeLiveData;
+    }
+
+    public void setTrendingMode() {
+        appModeLiveData.setValue(AppMode.Builder.builder().mode(AppMode.Mode.Trending).build());
+    }
+
+    public void setSearchMode(String query) {
+        appModeLiveData.setValue(
+                AppMode.Builder.builder().mode(AppMode.Mode.Search).query(query).build());
     }
 
     // Current scrolled position of the RecyclerView.
@@ -87,7 +107,8 @@ public final class AppViewModel extends AndroidViewModel {
     // Methods that UI can use to request API calls.
 
     public void requestRefreshData(@Nullable Runnable runOnRefreshComplete) {
-        if (!isSearchMode()) {
+        AppMode appMode = Objects.requireNonNull(appModeLiveData.getValue());
+        if (appMode.isTrendingMode()) {
             Log.d(TAG, "requestRefreshData: make trending request");
             giphyClient.makeTrendingRequest(
                     runOnRefreshComplete,
@@ -107,7 +128,7 @@ public final class AppViewModel extends AndroidViewModel {
         } else {
             Log.d(TAG, "requestRefreshData: make search request");
             giphyClient.makeSearchRequest(
-                    query,
+                    appMode.getSearchQuery(),
                     runOnRefreshComplete,
                     new GiphyClient.GiphyResultsHandler() {
                         @Override
@@ -124,7 +145,8 @@ public final class AppViewModel extends AndroidViewModel {
     }
 
     public void requestMoreData() {
-        if (!isSearchMode()) {
+        AppMode appMode = Objects.requireNonNull(appModeLiveData.getValue());
+        if (appMode.isTrendingMode()) {
             Log.d(TAG, "requestMoreData: make trending request: offset= " + underlyingData.size());
             giphyClient.makeTrendingRequest(
                     null,
@@ -144,7 +166,7 @@ public final class AppViewModel extends AndroidViewModel {
         } else {
             Log.d(TAG, "requestMoreData: make search request: offset= " + underlyingData.size());
             giphyClient.makeSearchRequest(
-                    query,
+                    appMode.getSearchQuery(),
                     null,
                     new GiphyClient.GiphyResultsHandler() {
                         @Override
@@ -158,24 +180,6 @@ public final class AppViewModel extends AndroidViewModel {
                     },
                     underlyingData.size());
         }
-    }
-
-    // Enable or disable "search" mode.
-    // With Search mode enabled, the "search" API endpoint is used.
-    // With it disabled, the "trending" API endpoint is used.
-
-    public String query = null;
-
-    public boolean isSearchMode() {
-        return query != null;
-    }
-
-    public void setSearchMode(String query) {
-        this.query = query;
-    }
-
-    public void clearSearchMode() {
-        query = null;
     }
 
     // Methods that modify the underlyingData & update the RecyclerView.
