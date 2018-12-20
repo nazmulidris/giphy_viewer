@@ -53,9 +53,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
-    // EventBus.
-    implementation 'org.greenrobot:eventbus:3.1.1'
-
     // Paginate / Infinite Scrolling..
     implementation 'com.github.markomilos:paginate:0.5.1'
 

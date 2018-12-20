@@ -22,8 +22,6 @@ import android.util.Log;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.giphy.sdk.core.models.Media;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -102,6 +100,14 @@ public final class AppViewModel extends AndroidViewModel {
 
     public ArrayList<Media> getUnderlyingData() {
         return underlyingData;
+    }
+
+    // Broadcast underlying data storage changes.
+
+    private final MutableLiveData<DataEvent> dataEventLiveData = new MutableLiveData<>();
+
+    public LiveData<DataEvent> getDataEventLiveData() {
+        return dataEventLiveData;
     }
 
     // Methods that UI can use to request API calls.
@@ -187,18 +193,23 @@ public final class AppViewModel extends AndroidViewModel {
     private void updateData(List<Media> newData) {
         underlyingData.addAll(newData);
         Log.d(TAG, "updateData: data size: " + underlyingData.size());
-        EventBus.getDefault().post(new UpdateDataEvent(newData, underlyingData));
+        dataEventLiveData.setValue(
+                DataEvent.Builder.builder()
+                        .type(DataEvent.Type.GetMore)
+                        .newSize(newData.size())
+                        .build());
     }
 
     private void resetData(List<Media> newData) {
         underlyingData.clear();
         underlyingData.addAll(newData);
         Log.d(TAG, "resetData: data size: " + underlyingData.size());
-        EventBus.getDefault().post(new RefreshDataEvent(underlyingData));
+        dataEventLiveData.setValue(
+                DataEvent.Builder.builder().type(DataEvent.Type.Refresh).build());
     }
 
     private void errorData() {
-        EventBus.getDefault().post(new ErrorDataEvent());
+        dataEventLiveData.setValue(DataEvent.Builder.builder().type(DataEvent.Type.Error).build());
     }
 
     // Events.

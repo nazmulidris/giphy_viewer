@@ -28,10 +28,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
 import com.paginate.Paginate;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -46,9 +42,10 @@ import static com.nazmul.giphy_viewer.AppViewModel.TAG;
  * Creates and manages the RecyclerView that is used by the {@link MainActivity}.
  *
  * <ol>
- *   <li>It is wired via EventBus to the {@link GiphyClient} that lets the adapter know when
- *       underlying data has changed in the {@link AppViewModel}.
- *   <li>The RecyclerView uses a StaggeredGridLayoutManager. And Fresco for image loading.
+ *   <li>It is wired via LiveData to the {@link AppViewModel}. It lets the RecyclerView Adapter know
+ *       when the {@link GiphyClient} has more data.
+ *   <li>The RecyclerView uses a StaggeredGridLayoutManager.
+ *   <li>Fresco is used for image loading.
  * </ol>
  */
 final class RecyclerViewManager {
@@ -61,16 +58,50 @@ final class RecyclerViewManager {
         this.recyclerView = recyclerView;
         this.appViewModel = ViewModelProviders.of(activity).get(AppViewModel.class);
         this.activity = activity;
-        setupEventBusSubscribers();
+        setupLiveDataObservers();
         setupLifecycleObservers();
         setupLayoutManager();
         setupDataAdapter();
     }
 
-    private void setupEventBusSubscribers() {
-        Log.d(TAG, "setupEventBusSubscribers: ");
-        // The subscriber must have @Subscribe annotated methods.
-        EventBus.getDefault().register(RecyclerViewManager.this);
+    private void setupLiveDataObservers() {
+        Log.d(TAG, "setupLiveDataObservers: ");
+        appViewModel
+                .getDataEventLiveData()
+                .observe(
+                        activity,
+                        dataEvent -> {
+                            switch (dataEvent.getType()) {
+                                case Error:
+                                    onErrorEvent();
+                                    break;
+                                case GetMore:
+                                    onGetMoreEvent(dataEvent.getNewSize());
+                                    break;
+                                case Refresh:
+                                    onRefreshEvent();
+                                    break;
+                            }
+                        });
+    }
+
+    public void onGetMoreEvent(int newDataSize) {
+        Log.d(TAG, "onGetMoreEvent: ");
+        isLoading = false;
+        int underlyingDataSize = appViewModel.getUnderlyingData().size();
+        dataAdapter.notifyItemRangeInserted(underlyingDataSize - newDataSize, newDataSize);
+    }
+
+    public void onRefreshEvent() {
+        Log.d(TAG, "onRefreshEvent: ");
+        setupInfiniteScrolling();
+        dataAdapter.notifyDataSetChanged();
+    }
+
+    public void onErrorEvent() {
+        Log.d(TAG, "onErrorEvent: ");
+        isLoading = false;
+        Toast.makeText(activity, "Network error occurred", Toast.LENGTH_LONG).show();
     }
 
     // Infinite scrolling support.
@@ -117,33 +148,6 @@ final class RecyclerViewManager {
         }
     }
 
-    // EventBus.
-
-    /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AppViewModel.UpdateDataEvent event) {
-        Log.d(TAG, "onMessageEvent: UpdateDataEvent");
-        isLoading = false;
-        dataAdapter.notifyItemRangeInserted(
-                event.underlyingData.size() - event.newData.size(), event.newData.size());
-    }
-
-    /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AppViewModel.RefreshDataEvent event) {
-        Log.d(TAG, "onMessageEvent: RefreshDataEvent");
-        setupInfiniteScrolling();
-        dataAdapter.notifyDataSetChanged();
-    }
-
-    /** More info on [threadMode](http://tinyurl.com/yabwdd2a). */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AppViewModel.ErrorDataEvent event) {
-        Log.d(TAG, "onMessageEvent: ErrorDataEvent");
-        isLoading = false;
-        Toast.makeText(activity, "Network error occurred", Toast.LENGTH_LONG).show();
-    }
-
     // Layout Manager.
 
     private static final int GRID_SPAN_COUNT = 2;
@@ -176,13 +180,6 @@ final class RecyclerViewManager {
                             void restoreListPosition() {
                                 layoutManager.scrollToPosition(appViewModel.getPosition());
                                 Log.d(TAG, "restoreListPosition: " + appViewModel.getPosition());
-                            }
-
-                            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-                            void unregisterEventBus() {
-                                Log.d(TAG, "unregisterEventBus: ON_DESTROY");
-                                // The subscriber must have @Subscribe annotated methods.
-                                EventBus.getDefault().unregister(RecyclerViewManager.this);
                             }
                         });
     }

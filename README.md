@@ -37,10 +37,6 @@ the trending GIFs.
     - [Media.java](http://tinyurl.com/ydac4992)
     - [GPHApiClient.java](http://tinyurl.com/ycvfz5mk)
 
-## Greenrobot EventBus
-
-- [Docs](https://github.com/greenrobot/EventBus)
-
 ## RecyclerView infinite scroll (request + result pagination)
 
 - Infinite scrolling w/ RecyclerView
