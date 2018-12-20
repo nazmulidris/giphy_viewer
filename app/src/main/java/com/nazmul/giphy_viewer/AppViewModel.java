@@ -23,6 +23,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.giphy.sdk.core.models.Media;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,8 +99,8 @@ public final class AppViewModel extends AndroidViewModel {
 
     private final ArrayList<Media> underlyingData = new ArrayList<>();
 
-    public ArrayList<Media> getUnderlyingData() {
-        return underlyingData;
+    public List<Media> getUnderlyingData() {
+        return Collections.unmodifiableList(underlyingData);
     }
 
     // Broadcast underlying data storage changes.
