@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
@@ -36,93 +35,95 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
  */
 public final class MainActivity extends AppCompatActivity {
 
-    private ViewHolder viewHolder;
-    private AppViewModel appViewModel;
+private ViewHolder   viewHolder;
+private AppViewModel appViewModel;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        init();
-    }
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_main);
+  init();
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        viewHolder.setupSearchView(searchView, searchMenuItem, appViewModel);
-        return super.onCreateOptionsMenu(menu);
-    }
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+  getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+  MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+  SearchView searchView = (SearchView) searchMenuItem.getActionView();
+  viewHolder.setupSearchView(searchView, searchMenuItem, appViewModel);
+  return super.onCreateOptionsMenu(menu);
+}
 
-    // Cold boot the Activity.
+// Cold boot the Activity.
 
-    private void init() {
-        setupViewModel();
-        viewHolder = new ViewHolder(this);
-        viewHolder.setupSwipeRefreshLayout();
-        viewHolder.setupToolbar();
-        viewHolder.setupRecyclerView();
-        loadData();
-    }
+private void init() {
+  setupViewModel();
+  viewHolder = new ViewHolder(this);
+  viewHolder.setupSwipeRefreshLayout();
+  viewHolder.setupToolbar();
+  viewHolder.setupRecyclerView();
+  loadData();
+}
 
-    private void setupViewModel() {
-        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
-    }
+private void setupViewModel() {
+  appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
+}
 
-    // Load fresh data into the activity.
+// Load fresh data into the activity.
 
-    private void loadData() {
-        if (appViewModel.getUnderlyingData().isEmpty()) {
-            // Activity has no data, so perform a refresh now.
-            viewHolder.swipeRefreshLayout.setRefreshing(true);
-            viewHolder.onRefreshGestureHandler.onRefresh();
-        } else {
-            // Activity underwent an orientation change. The AppViewModel has data, but pagination
-            // isn't attached to the RecyclerView, since this only happens after the first refresh
-            // operation occurs (in the block above) when the Activity is created for the very very
-            // first time (not an orientation change driven destroy -> instantiate).
-            viewHolder.recyclerViewManager.setupInfiniteScrolling();
-        }
-    }
+private void loadData() {
+  if (appViewModel.getUnderlyingData().isEmpty()) {
+    // Activity has no data, so perform a refresh now.
+    viewHolder.swipeRefreshLayout.setRefreshing(true);
+    viewHolder.onRefreshGestureHandler.onRefresh();
+  } else {
+    // Activity underwent an orientation change. The AppViewModel has data, but pagination
+    // isn't attached to the RecyclerView, since this only happens after the first refresh
+    // operation occurs (in the block above) when the Activity is created for the very very
+    // first time (not an orientation change driven destroy -> instantiate).
+    viewHolder.recyclerViewManager.setupInfiniteScrolling();
+  }
+}
 
-    /** Convenience class that holds all the views of this MainActivity in one place */
-    private final class ViewHolder {
+/**
+ * Convenience class that holds all the views of this MainActivity in one place
+ */
+private final class ViewHolder {
 
-        MainActivity activity;
-        Toolbar toolbar;
-        SwipeRefreshLayout swipeRefreshLayout;
-        RecyclerView recyclerView;
-        RecyclerViewManager recyclerViewManager;
-        SwipeRefreshLayout.OnRefreshListener onRefreshGestureHandler;
-        Runnable runOnRefreshComplete;
-        SearchViewManager searchViewManager;
+  MainActivity                         activity;
+  Toolbar                              toolbar;
+  SwipeRefreshLayout                   swipeRefreshLayout;
+  RecyclerView                         recyclerView;
+  RecyclerViewManager                  recyclerViewManager;
+  SwipeRefreshLayout.OnRefreshListener onRefreshGestureHandler;
+  Runnable                             runOnRefreshComplete;
+  SearchViewManager                    searchViewManager;
 
-        ViewHolder(MainActivity mainActivity) {
-            this.activity = mainActivity;
-        }
+  ViewHolder(MainActivity mainActivity) {
+    this.activity = mainActivity;
+  }
 
-        void setupToolbar() {
-            toolbar = findViewById(R.id.app_toolbar);
-            setSupportActionBar(viewHolder.toolbar);
-        }
+  void setupToolbar() {
+    toolbar = findViewById(R.id.app_toolbar);
+    setSupportActionBar(viewHolder.toolbar);
+  }
 
-        void setupSwipeRefreshLayout() {
-            swipeRefreshLayout = findViewById(R.id.swipe_refresh_container);
-            runOnRefreshComplete = () -> swipeRefreshLayout.setRefreshing(false);
-            onRefreshGestureHandler = () -> appViewModel.requestRefreshData(runOnRefreshComplete);
-            swipeRefreshLayout.setOnRefreshListener(onRefreshGestureHandler);
-        }
+  void setupSwipeRefreshLayout() {
+    swipeRefreshLayout = findViewById(R.id.swipe_refresh_container);
+    runOnRefreshComplete = () -> swipeRefreshLayout.setRefreshing(false);
+    onRefreshGestureHandler = () -> appViewModel.requestRefreshData(runOnRefreshComplete);
+    swipeRefreshLayout.setOnRefreshListener(onRefreshGestureHandler);
+  }
 
-        void setupRecyclerView() {
-            recyclerView = findViewById(R.id.recycler_view);
-            recyclerViewManager = new RecyclerViewManager(activity, recyclerView);
-        }
+  void setupRecyclerView() {
+    recyclerView = findViewById(R.id.recycler_view);
+    recyclerViewManager = new RecyclerViewManager(activity, recyclerView);
+  }
 
-        void setupSearchView(
-                SearchView searchView, MenuItem searchMenuItem, AppViewModel appViewModel) {
-            searchViewManager = new SearchViewManager();
-            searchViewManager.setupSearchView(searchView, searchMenuItem, appViewModel);
-        }
-    }
+  void setupSearchView(
+      SearchView searchView, MenuItem searchMenuItem, AppViewModel appViewModel) {
+    searchViewManager = new SearchViewManager();
+    searchViewManager.setupSearchView(searchView, searchMenuItem, appViewModel);
+  }
+}
 }

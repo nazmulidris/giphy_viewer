@@ -15,7 +15,6 @@
   -->
 
 <com.facebook.drawee.view.SimpleDraweeView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/image_grid_cell"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

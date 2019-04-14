@@ -17,56 +17,56 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    defaultConfig {
-        applicationId "com.nazmul.giphy_viewer"
-        minSdkVersion 18
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+  compileSdkVersion 28
+  defaultConfig {
+    applicationId "com.nazmul.giphy_viewer"
+    minSdkVersion 18
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 dependencies {
-    // Local dependencies.
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+  // Local dependencies.
+  implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    // AppCompat.
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
+  // AppCompat.
+  implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
 
-    // CardView.
-    implementation 'androidx.cardview:cardview:1.0.0'
+  // CardView.
+  implementation 'androidx.cardview:cardview:1.0.0'
 
-    // SwipeRefreshLayout.
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha01'
+  // SwipeRefreshLayout.
+  implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha01'
 
-    // RecyclerView.
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
+  // RecyclerView.
+  implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
 
-    // [Architecture Components](http://tinyurl.com/y7rad9t4).
-    def lifecycle_version = '2.1.0-alpha04'
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+  // [Architecture Components](http://tinyurl.com/y7rad9t4).
+  def lifecycle_version = '2.1.0-alpha04'
+  implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+  implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
-    // Paginate / Infinite Scrolling..
-    implementation 'com.github.markomilos:paginate:0.5.1'
+  // Paginate / Infinite Scrolling..
+  implementation 'com.github.markomilos:paginate:0.5.1'
 
-    // Giphy SDK.
-    implementation('com.giphy.sdk:core:1.0.2@aar') {
-        transitive = true
-    }
+  // Giphy SDK.
+  implementation('com.giphy.sdk:core:1.0.2@aar') {
+    transitive = true
+  }
 
-    // Fresco.
-    implementation 'com.facebook.fresco:fresco:1.11.0'
-    implementation 'com.facebook.fresco:animated-gif:1.11.0'
+  // Fresco.
+  implementation 'com.facebook.fresco:fresco:1.11.0'
+  implementation 'com.facebook.fresco:animated-gif:1.11.0'
 
-    // Android Test.
-    testImplementation 'junit:junit:4.13-beta-2'
-    androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
+  // Android Test.
+  testImplementation 'junit:junit:4.13-beta-2'
+  androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
 }

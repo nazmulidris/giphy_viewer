@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.giphy.sdk.core.models.Media;
@@ -35,46 +34,46 @@ import com.giphy.sdk.core.models.Media;
  */
 public final class FullScreenActivity extends Activity {
 
-    public static final String WIDTH = "width";
-    public static final String HEIGHT = "height";
-    public static final String URL = "url";
+public static final String WIDTH  = "width";
+public static final String HEIGHT = "height";
+public static final String URL    = "url";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fullscreen_activity);
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.fullscreen_activity);
 
-        Uri imageUri = getIntent().getData();
-        int width = getIntent().getIntExtra(WIDTH, 0);
-        int height = getIntent().getIntExtra(HEIGHT, 0);
+  Uri imageUri = getIntent().getData();
+  int width = getIntent().getIntExtra(WIDTH, 0);
+  int height = getIntent().getIntExtra(HEIGHT, 0);
 
-        SimpleDraweeView imageView = findViewById(R.id.fullscreen_gif);
+  SimpleDraweeView imageView = findViewById(R.id.fullscreen_gif);
 
-        imageView.setAspectRatio((float) width / (float) height);
-        imageView.setController(
-                Fresco.newDraweeControllerBuilder()
-                        .setUri(imageUri)
-                        .setAutoPlayAnimations(true)
-                        .build());
+  imageView.setAspectRatio((float) width / (float) height);
+  imageView.setController(
+      Fresco.newDraweeControllerBuilder()
+            .setUri(imageUri)
+            .setAutoPlayAnimations(true)
+            .build());
 
-        copyUrlToClipboard(imageUri);
-    }
+  copyUrlToClipboard(imageUri);
+}
 
-    private void copyUrlToClipboard(Uri imageUri) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(URL, imageUri.toString());
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(this, "URL copied to clipboard", Toast.LENGTH_SHORT).show();
-    }
+private void copyUrlToClipboard(Uri imageUri) {
+  ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+  ClipData clip = ClipData.newPlainText(URL, imageUri.toString());
+  clipboard.setPrimaryClip(clip);
+  Toast.makeText(this, "URL copied to clipboard", Toast.LENGTH_SHORT).show();
+}
 
-    public static Intent getIntent(Context context, Media item) {
-        Intent intent = new Intent(context, FullScreenActivity.class);
-        final String url = item.getImages().getOriginal().getGifUrl();
-        intent.setData(Uri.parse(url));
-        final int width = item.getImages().getOriginal().getWidth();
-        intent.putExtra(WIDTH, width);
-        final int height = item.getImages().getOriginal().getHeight();
-        intent.putExtra(HEIGHT, height);
-        return intent;
-    }
+public static Intent getIntent(Context context, Media item) {
+  Intent intent = new Intent(context, FullScreenActivity.class);
+  final String url = item.getImages().getOriginal().getGifUrl();
+  intent.setData(Uri.parse(url));
+  final int width = item.getImages().getOriginal().getWidth();
+  intent.putExtra(WIDTH, width);
+  final int height = item.getImages().getOriginal().getHeight();
+  intent.putExtra(HEIGHT, height);
+  return intent;
+}
 }

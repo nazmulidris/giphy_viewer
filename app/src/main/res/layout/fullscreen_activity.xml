@@ -19,11 +19,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.facebook.drawee.view.SimpleDraweeView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/fullscreen_gif"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        fresco:placeholderImage="@drawable/ic_cloud_download_black"
-        android:layout_gravity="center" />
+  <com.facebook.drawee.view.SimpleDraweeView xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/fullscreen_gif"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      fresco:placeholderImage="@drawable/ic_cloud_download_black"
+      android:layout_gravity="center" />
 
 </LinearLayout>

@@ -22,84 +22,84 @@ import androidx.annotation.NonNull;
  * Represents changes in underlying data (from the Giphy server). Changes can be either:
  *
  * <ol>
- *   <li>Refresh - entirely new data set is available.
- *   <li>Update - more data was added to existing set (the amount of new data is specified).
+ * <li>Refresh - entirely new data set is available.
+ * <li>Update - more data was added to existing set (the amount of new data is specified).
  * </ol>
  */
 public class DataEvent {
 
-    public static final class Builder {
+public static final class Builder {
 
-        private Type type = Type.Refresh;
-        private int newSize = 0;
+  private Type type    = Type.Refresh;
+  private int  newSize = 0;
 
-        public static Builder builder() {
-            return new Builder();
-        }
+  public static Builder builder() {
+    return new Builder();
+  }
 
-        public Builder type(Type mode) {
-            this.type = mode;
-            return this;
-        }
+  public Builder type(Type mode) {
+    this.type = mode;
+    return this;
+  }
 
-        public Builder newSize(int newSize) {
-            this.newSize = newSize;
-            return this;
-        }
+  public Builder newSize(int newSize) {
+    this.newSize = newSize;
+    return this;
+  }
 
-        public DataEvent build() {
-            return new DataEvent(type, newSize);
-        }
-    }
+  public DataEvent build() {
+    return new DataEvent(type, newSize);
+  }
+}
 
-    private DataEvent(@NonNull Type mode, int query) {
-        this.type = mode;
-        this.newSize = query;
-    }
+private DataEvent(@NonNull Type mode, int query) {
+  this.type = mode;
+  this.newSize = query;
+}
 
-    public enum Type {
-        Refresh,
-        GetMore,
-        Error
-    }
+public enum Type {
+  Refresh,
+  GetMore,
+  Error
+}
 
-    private Type type;
+private Type type;
 
-    public Type getType(){
-        return type;
-    }
+public Type getType() {
+  return type;
+}
 
-    public boolean isErrorType() {
-        return type == Type.Error;
-    }
+public boolean isErrorType() {
+  return type == Type.Error;
+}
 
-    public boolean isRefreshType() {
-        return type == Type.Refresh;
-    }
+public boolean isRefreshType() {
+  return type == Type.Refresh;
+}
 
-    public boolean isGetMoreType() {
-        return type == Type.GetMore;
-    }
+public boolean isGetMoreType() {
+  return type == Type.GetMore;
+}
 
-    private int newSize;
+private int newSize;
 
-    public int getNewSize() {
-        return newSize;
-    }
+public int getNewSize() {
+  return newSize;
+}
 
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        switch (type) {
-            case GetMore:
-                stringBuilder.append(Type.Refresh.name()).append(", newSize:").append(newSize);
-                break;
-            case Refresh:
-                stringBuilder.append(Type.Refresh.name());
-                break;
-            case Error:
-                stringBuilder.append(Type.Error.name());
-                break;
-        }
-        return stringBuilder.toString();
-    }
+public String toString() {
+  StringBuilder stringBuilder = new StringBuilder();
+  switch (type) {
+    case GetMore:
+      stringBuilder.append(Type.Refresh.name()).append(", newSize:").append(newSize);
+      break;
+    case Refresh:
+      stringBuilder.append(Type.Refresh.name());
+      break;
+    case Error:
+      stringBuilder.append(Type.Error.name());
+      break;
+  }
+  return stringBuilder.toString();
+}
 }
